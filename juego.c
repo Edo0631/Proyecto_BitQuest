@@ -94,3 +94,73 @@ void imprimir_mapa(char mapa[FILAS][COLAS], Jugador *j, EstadoNivel *nivel) {
         putchar('\n');
     }     
 }
+
+void mover_jugador(char mapa[FILAS][COLAS], Jugador *j, char tecla, int *nivel_terminado) {
+    int nueva_fila = j->fila;
+    int nueva_col = j->col;
+
+    switch (tecla) {
+        case 'w': case 'W': nueva_fila--; break;
+        case 's': case 'S': nueva_fila++; break;
+        case 'a': case 'A': nueva_col--; break;
+        case 'd': case 'D': nueva_col++; break;
+        default: return;
+    }
+
+    //validando limites
+    if (nueva_fila < 0 || nueva_fila >= FILAS || nueva_col < 0 || nueva_col >= COLAS) {
+        return;
+    }
+
+    // validar movimiento con NASM
+    if(!validar_movimiento(&mapa[0][0], COLAS, nueva_fila, nueva_col)) {
+        return;
+    }
+
+    char celda = mapa[nueva_fila][nueva_col];
+
+    // Iteracion
+    //MONEDA (con NASM)
+    if (detectar_objeto(&mapa[0][0], COLAS, nueva_fila, nueva_col, MONEDA)) {
+        j->monedas++;
+        mapa[nueva_fila][nueva_col] = CAMINO;
+    }
+
+    //Llave
+    if(celda == LLAVE) {
+        j->tiene_llave = 1;
+        mapa[nueva_fila][nueva_col] = CAMINO;
+    }
+    
+    //Puerta
+    if(celda == PUERTA) {
+        if(!j->tiene_llave) {
+            printf("\n Necesita la llave! \n");
+            return;
+        }
+        mapa[nueva_fila][nueva_col] = CAMINO;
+    }
+
+    //Salida
+    if(celda == SALIDA) {
+        *nivel_terminado = 1;
+    }
+
+    //Mover Jugador
+    mapa[j->fila][j->col] = CAMINO;
+    j->fila = nueva_fila;
+    j->col  = nueva_col;
+    j->pasos++;
+}
+
+void mostrar_resumen_nivel(Jugador *j, EstadoNivel *nivel) {
+    printf("\n===================================\n");
+    printf("Nivel %d completado\n", nivel->numero);
+    printf("Monedas: %d/%d\n", j->monedas, nivel->total_monedas);
+    printf("Pasos: %d\n", j->pasos);
+    printf("===================================\n");
+
+    printf("ENTER para continuar: ");
+    getchar();
+    getchar();
+}
