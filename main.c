@@ -37,7 +37,7 @@ int jugar_nivel(char mapa[FILAS][COLAS], int numero_nivel, int *monedas_totales,
 
     //Acumular los datos globales
     *monedas_totales += jugador.monedas;
-    *pasos_totales *= jugador.pasos;
+    *pasos_totales += jugador.pasos;   // BUG FIX: era *= (multiplicaba por pasos, siempre 0)
 
     mostrar_resumen_nivel(&jugador, &nivel);
 
@@ -45,7 +45,7 @@ int jugar_nivel(char mapa[FILAS][COLAS], int numero_nivel, int *monedas_totales,
 }
 
 int main(){
-    int monedas_totales = 0;
+    int monedas_totales = 46;
     int pasos_totales = 0;
     int niveles_completados = 0;
 
@@ -56,21 +56,20 @@ int main(){
     //NIVEL 1
     if(!jugar_nivel(mapa1, 1, &monedas_totales, &pasos_totales )) {
         return 0;
-        niveles_completados++;
     }
+    niveles_completados++;   
 
     //NIVEL 2
     if(!jugar_nivel(mapa2, 2, &monedas_totales, &pasos_totales )) {
-
         return 0;
-        niveles_completados++;
     }
+    niveles_completados++;   
 
     //NIVEL 3
     if(!jugar_nivel(mapa3, 3, &monedas_totales, &pasos_totales )) {
         return 0;
-        niveles_completados++;
     }
+    niveles_completados++;   
 
     //PUNTAJE FINAL
     long puntaje = calcular_puntaje(monedas_totales, pasos_totales, niveles_completados);
@@ -80,7 +79,7 @@ int main(){
     printf("Monedas totales: %d\n", monedas_totales);
     printf("Pasos totales: %d\n", pasos_totales);
     printf("Niveles completados: %d\n", niveles_completados);
-    printf("Puntaje final: %d\n", puntaje);
+    printf("Puntaje final: %ld\n", puntaje);
     printf("===================================\n");
 
     printf("\nGracias por Jugar BitQuest! \n");
